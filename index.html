@@ -40,41 +40,24 @@
          const map = new Map({basemap: "hybrid"});
 
          const view = new MapView({
-            map: map,
-            extent: {
-            xmin: -9177811,
-            ymin: 4247000,
-            xmax: -9176791,
-            ymax: 4247784,
-            spatialReference: 102100
-            },
-            container: "viewDiv"
-         })
-
-         const catastro = new MapImageLayer({
-            url: "https://earthquake.usgs.gov/arcgis/rest/services/eq/Recent_Earthquakes/MapServer",
-         })
-
-         map.layers.add(catastro)
+          map: map,
+          center: [-73.36, 5.53],
+          zoom: 13,
+          container: "viewDiv"
+        });
 
          const popupTrees = {
             "title": "Datos catastro",
-            "content": "<b>ID:</b> {Tree_ID}<br><b>Status:</b> {Status}<br>"
+            "content": "<b>Código Departamento:</b> {DPTO_CCDGO}<br><b>Código Municipio:</b> {MPIO_CCDGO}<br>"
          }
-
-         const featureLayer = new FeatureLayer({
-            url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Landscape_Trees/FeatureServer/0",
-            outFields: ["Tree_ID", "Status"],
-            popupTemplate: popupTrees
-         })
-
-         map.layers.add(featureLayer)
 
          let geojsonUrl = location.href
          geojsonUrl = geojsonUrl.replace("index.html", "") + "/prueba.geojson";
          
          const geojsonLayer = new GeoJSONLayer({
             url: geojsonUrl,
+            outFields: ["DPTO_CCDGO", "MPIO_CCDGO"],
+            popupTemplate: popupTrees
          })
 
          map.layers.add(geojsonLayer)
