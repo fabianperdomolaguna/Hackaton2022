@@ -1,0 +1,99 @@
+<html>
+   <head>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+   <title>PERMOR Web App</title>
+
+   <style>
+      html,
+      body,
+      #viewDiv {
+         padding: 0;
+         margin: 0;
+         height: 100%;
+         width: 100%;
+      }
+   </style>
+
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+   <link rel="stylesheet" href="https://js.arcgis.com/4.24/esri/themes/light/main.css">
+   <script src="https://js.arcgis.com/4.24/"></script>
+
+   <script>
+      require([
+         "esri/config", 
+         "esri/Map", 
+         "esri/views/MapView", 
+         "esri/layers/FeatureLayer",
+         "esri/layers/MapImageLayer",
+         "esri/layers/GeoJSONLayer"], function (
+            esriConfig, 
+            Map, 
+            MapView, 
+            FeatureLayer, 
+            MapImageLayer,
+            GeoJSONLayer) {
+
+         esriConfig.apiKey = "AAPKdd0632bbce6744fe9e375df115bbbd463-MOYnICZh_W_N1GDmVHGX3MzT1LUtxziYzntCZa21MyLm4Jt2MM6awyE4uaa_kn"
+
+         const map = new Map({basemap: "hybrid"});
+
+         const view = new MapView({
+            map: map,
+            extent: {
+            xmin: -9177811,
+            ymin: 4247000,
+            xmax: -9176791,
+            ymax: 4247784,
+            spatialReference: 102100
+            },
+            container: "viewDiv"
+         })
+
+         const catastro = new MapImageLayer({
+            url: "https://earthquake.usgs.gov/arcgis/rest/services/eq/Recent_Earthquakes/MapServer",
+         })
+
+         map.layers.add(catastro)
+
+         const popupTrees = {
+            "title": "Datos catastro",
+            "content": "<b>ID:</b> {Tree_ID}<br><b>Status:</b> {Status}<br>"
+         }
+
+         const featureLayer = new FeatureLayer({
+            url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Landscape_Trees/FeatureServer/0",
+            outFields: ["Tree_ID", "Status"],
+            popupTemplate: popupTrees
+         })
+
+         map.layers.add(featureLayer)
+
+         let geojsonUrl = location.href
+         geojsonUrl = geojsonUrl.replace("index.html", "") + "/prueba.geojson";
+         
+         const geojsonLayer = new GeoJSONLayer({
+            url: geojsonUrl,
+         })
+
+         map.layers.add(geojsonLayer)
+      })
+   </script>
+
+   </head>
+   <body>
+      <div>
+         <nav class="navbar navbar-dark bg-primary">
+            <div class="container-fluid">
+               <a class="navbar-brand" href="#">PERMOR Web</a>
+               <span class="navbar-text">
+                  Consulta la característica de predios
+               </span>
+            </div>
+          </nav>
+   
+         <div id="viewDiv"></div>
+      </div>
+   </body>
+</html>
