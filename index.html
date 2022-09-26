@@ -27,40 +27,80 @@
          "esri/views/MapView", 
          "esri/layers/FeatureLayer",
          "esri/layers/MapImageLayer",
-         "esri/layers/GeoJSONLayer"], function (
+         "esri/layers/GeoJSONLayer",
+         "esri/widgets/Editor",
+         "esri/widgets/LayerList"], function (
             esriConfig, 
             Map, 
             MapView, 
             FeatureLayer, 
             MapImageLayer,
-            GeoJSONLayer) {
+            GeoJSONLayer,
+            Editor,
+            LayerList) {
 
          esriConfig.apiKey = "AAPKdd0632bbce6744fe9e375df115bbbd463-MOYnICZh_W_N1GDmVHGX3MzT1LUtxziYzntCZa21MyLm4Jt2MM6awyE4uaa_kn"
 
-         const map = new Map({basemap: "hybrid"});
+         const popupTreesPredial = {
+            title: "Datos uso del suelo",
+            content: "<b>Código catastral:</b> {CODIGO}<br><b>Código catastral antiguo:</b> {CODIGO_ANT}<br><b>Observaciones:</b> {OBSERVACIONES}<br>"
+         }
+         
+         const predialLayer = new FeatureLayer({
+            url: "https://services3.arcgis.com/UbsKn4Eg8cFqZrOG/arcgis/rest/services/prediosrurales/FeatureServer/0",
+            outFields: ["CODIGO", "CODIGO_ANT"],
+            popupTemplate: popupTreesPredial
+         });
 
-         const view = new MapView({
-          map: map,
-          center: [-73.36, 5.53],
-          zoom: 13,
-          container: "viewDiv"
-        });
-
-         const popupTrees = {
-            "title": "Datos catastro",
-            "content": "<b>Código Departamento:</b> {DPTO_CCDGO}<br><b>Código Municipio:</b> {MPIO_CCDGO}<br>"
+         const suelosRenderer = {
+            type: "simple",
+            symbol: 
+            { 
+               type: "simple-fill", 
+               color: [255, 128, 0, 0.3],
+               outline: 
+               {
+                  widht: 1,
+                  color: "white",
+               }
+            }
          }
 
-         let geojsonUrl = location.href
-         geojsonUrl = geojsonUrl.replace("index.html", "") + "/prueba.geojson";
-         
-         const geojsonLayer = new GeoJSONLayer({
-            url: geojsonUrl,
-            outFields: ["DPTO_CCDGO", "MPIO_CCDGO"],
-            popupTemplate: popupTrees
+         const popupTreesSuelos = {
+            title: "Datos catastro",
+            content: "<b>Litología:</b> {LITOLOGÍA}<br><b>Tipo de relieve:</b> {TIPO_RELIE}<br><b>Descripción del relieve:</b> {CARACTERÍ}<br>"
+         }
+
+         const suelosLayer = new FeatureLayer({
+            url: "https://services3.arcgis.com/UbsKn4Eg8cFqZrOG/arcgis/rest/services/uso_suelos/FeatureServer/0",
+            renderer: suelosRenderer,
+            outFields: ["LITOLOGÍA", "TIPO_RELIE", "CARACTERÍ"],
+            popupTemplate: popupTreesSuelos
+         });
+
+         const map = new Map({
+            basemap: "hybrid",
+            layers: [suelosLayer, predialLayer]
+         });
+
+         const view = new MapView({
+            map: map,
+            center: [-73.28, 5.56],
+            zoom: 13,
+            container: "viewDiv"
          })
 
-         map.layers.add(geojsonLayer)
+         const editorLayer = new Editor({
+            view: view
+         })
+      
+         view.ui.add(editorLayer, "top-right");
+
+         const listLayers = new LayerList({
+            view: view
+         })
+
+         view.ui.add(listLayers, "bottom-left")
       })
    </script>
 
