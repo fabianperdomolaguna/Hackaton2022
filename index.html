@@ -29,7 +29,8 @@
          "esri/layers/MapImageLayer",
          "esri/layers/GeoJSONLayer",
          "esri/widgets/Editor",
-         "esri/widgets/LayerList"], function (
+         "esri/widgets/LayerList",
+         "esri/widgets/Track"], function (
             esriConfig, 
             Map, 
             MapView, 
@@ -37,18 +38,19 @@
             MapImageLayer,
             GeoJSONLayer,
             Editor,
-            LayerList) {
+            LayerList,
+            Track) {
 
          esriConfig.apiKey = "AAPKdd0632bbce6744fe9e375df115bbbd463-MOYnICZh_W_N1GDmVHGX3MzT1LUtxziYzntCZa21MyLm4Jt2MM6awyE4uaa_kn"
 
          const popupTreesPredial = {
             title: "Datos uso del suelo",
-            content: "<b>Código catastral:</b> {CODIGO}<br><b>Código catastral antiguo:</b> {CODIGO_ANT}<br><b>Observaciones:</b> {OBSERVACIONES}<br>"
+            content: "<b>Código catastral:</b> {CODIGO}<br><b>Código catastral antiguo:</b> {CODIGO_ANT}<br><b>Largo del lote (m):</b> {FONDO [M]}<br><b>Longitud del frente del lote (m):</b> {FRENTE [M]}<br><b>Nombre dueño del predio:</b> {NOMBRE}<br><b>Observaciones:</b> {OBSERVACIONES}<br>"
          }
          
          const predialLayer = new FeatureLayer({
-            url: "https://services3.arcgis.com/UbsKn4Eg8cFqZrOG/arcgis/rest/services/prediosrurales/FeatureServer/0",
-            outFields: ["CODIGO", "CODIGO_ANT"],
+            url: "https://services3.arcgis.com/UbsKn4Eg8cFqZrOG/arcgis/rest/services/predialchivatafinal/FeatureServer/0",
+            outFields: ["FONDO [M]", "CEDULA", "FRENTE [M]", "NOMBRE"],
             popupTemplate: popupTreesPredial
          });
 
@@ -101,6 +103,16 @@
          })
 
          view.ui.add(listLayers, "bottom-left")
+
+         var track = new Track({
+            view: view
+         })
+
+         view.ui.add(track, "top-left")
+
+         view.when(function() {
+            track.start()
+         })
       })
    </script>
 
